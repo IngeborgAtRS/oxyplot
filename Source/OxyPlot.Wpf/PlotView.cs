@@ -9,10 +9,8 @@
 
 namespace OxyPlot.Wpf
 {
-    using System.ComponentModel;
-    using System.Diagnostics;
-
     using OxyPlot;
+    using System.ComponentModel;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
