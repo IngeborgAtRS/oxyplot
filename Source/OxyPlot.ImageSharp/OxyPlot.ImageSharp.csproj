@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <LangVersion>12</LangVersion>
-        <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+        <LangVersion>13</LangVersion>
+        <TargetFrameworks>net8.0</TargetFrameworks>
         <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
         <Description>OxyPlot is a plotting library for .NET. This is package is based on SixLabors.ImageSharp.</Description>
         <PackageTags>plotting plot charting chart imagesharp</PackageTags>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningsAsErrors />

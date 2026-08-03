@@ -4,7 +4,7 @@
         <UseWindowsForms>true</UseWindowsForms>
         <Description>OxyPlot is a plotting library for .NET. This package targets Windows Forms applications.</Description>
         <PackageTags>plotting plot charting chart</PackageTags>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <SignAssembly>True</SignAssembly>
         <AssemblyOriginatorKeyFile>OxyPlot.WindowsForms.snk</AssemblyOriginatorKeyFile>
