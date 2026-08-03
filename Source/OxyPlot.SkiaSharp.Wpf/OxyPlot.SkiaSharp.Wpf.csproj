@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net462;net6.0-windows7.0;net8.0-windows7.0;net10.0-windows7.0</TargetFrameworks>
+    <TargetFrameworks>net462;net8.0-windows</TargetFrameworks>
     <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
     <UseWPF>true</UseWPF>
     <Description>OxyPlot is a plotting library for .NET. This package targets WPF applications and uses the SkiaSharp renderer.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+      <PackageId>$(PackageIdPrefix)OxyPlot.SkiaSharp.Wpf</PackageId>
+      <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <PackageTags>plotting plot charting chart wpf</PackageTags>
-    <LangVersion>14</LangVersion>
+    <LangVersion>13</LangVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>OxyPlot.SkiaSharp.Wpf.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
