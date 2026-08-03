@@ -3,11 +3,12 @@
 //   Copyright (c) 2026 OxyPlot contributors
 // </copyright>
 // <summary>
-//   A subclass of <see cref="System.Windows.Controls.Canvas" /> that is used to render the plot.
+//   A subclass of <see cref="System.Windows.Controls.Panel" /> that is used to render the plot.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 namespace OxyPlot.Wpf
 {
+    using System;
     using System.Globalization;
     using System.Windows;
     using System.Windows.Controls;
@@ -146,22 +147,31 @@ namespace OxyPlot.Wpf
             if (this.currentDc == null)
                 return;
 
-            this.currentDc.PushOpacity(opacity);
-            if (RenderOptions.GetBitmapScalingMode(this.objectsToRender) != scalingMode)
+            try
             {
-                var wrappedGroup = new DrawingGroup();
-                RenderOptions.SetBitmapScalingMode(wrappedGroup, scalingMode);
-                using (var dc = wrappedGroup.Open())
+                this.currentDc.PushOpacity(opacity);
+                if (RenderOptions.GetBitmapScalingMode(this.objectsToRender) != scalingMode)
                 {
-                    dc.DrawImage(sourceImage, new Rect(new Point(destX, destY), new Size(destWidth, destHeight)));
+                    var wrappedGroup = new DrawingGroup();
+                    RenderOptions.SetBitmapScalingMode(wrappedGroup, scalingMode);
+                    using (var dc = wrappedGroup.Open())
+                    {
+                        dc.DrawImage(sourceImage, new Rect(new Point(destX, destY), new Size(destWidth, destHeight)));
+                    }
+
+                    this.currentDc.DrawDrawing(wrappedGroup);
                 }
-                this.currentDc.DrawDrawing(wrappedGroup);
+                else
+                {
+                    this.currentDc.DrawImage(
+                        sourceImage,
+                        new Rect(new Point(destX, destY), new Size(destWidth, destHeight)));
+                }
             }
-            else
+            finally
             {
-                this.currentDc.DrawImage(sourceImage, new Rect(new Point(destX, destY), new Size(destWidth, destHeight)));
+                this.currentDc.Pop();
             }
-            this.currentDc.Pop();
         }
 
         /// <summary>
@@ -194,30 +204,35 @@ namespace OxyPlot.Wpf
                 fontSize = this.GetValue(TextBlock.FontSizeProperty) is double fs ? fs : 12.0;
             }
 
-            this.currentDc.PushTransform(transform);
+            try
+            {
+                this.currentDc.PushTransform(transform);
 
-            Typeface typeface = new Typeface(
-              (fontFamily ?? this.GetValue(TextBlock.FontFamilyProperty) as FontFamily)!,
-              FontStyles.Normal,
-              fontWeight,
-              FontStretches.Normal);
+                Typeface typeface = new Typeface(
+                    (fontFamily ?? this.GetValue(TextBlock.FontFamilyProperty) as FontFamily)!,
+                    FontStyles.Normal,
+                    fontWeight,
+                    FontStretches.Normal);
 
-            var dpiScale = VisualTreeHelper.GetDpi(this).PixelsPerDip;
+                var dpiScale = VisualTreeHelper.GetDpi(this).PixelsPerDip;
 
-            FormattedText formattedText = new FormattedText(
-              text,
-              CultureInfo.CurrentCulture,
-              this.FlowDirection,
-              typeface,
-              fontSize,
-              brush,
-              null,
-              textFormattingMode,
-              dpiScale);
+                FormattedText formattedText = new FormattedText(
+                    text,
+                    CultureInfo.CurrentCulture,
+                    this.FlowDirection,
+                    typeface,
+                    fontSize,
+                    brush,
+                    null,
+                    textFormattingMode,
+                    dpiScale);
 
-            this.currentDc.DrawText(formattedText, location);
-
-            this.currentDc.Pop(); // transform
+                this.currentDc.DrawText(formattedText, location);
+            }
+            finally
+            {
+                this.currentDc.Pop(); // transform
+            }
         }
 
         /// <summary>

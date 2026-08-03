@@ -9,6 +9,8 @@
 
 namespace OxyPlot.Wpf
 {
+    using System;
+
     using OxyPlot;
     using System.ComponentModel;
     using System.Windows;
@@ -137,9 +139,9 @@ namespace OxyPlot.Wpf
         {
             return this.RenderMode switch
             {
-                RenderMode.Drawing => new DrawingRenderContext(this.RenderSurface as RenderSurface),
-                RenderMode.Canvas => new CanvasRenderContext(this.RenderSurface as Canvas),
-                RenderMode.Xaml => new XamlRenderContext(this.RenderSurface as Canvas),
+                RenderMode.Drawing => new DrawingRenderContext((RenderSurface)this.RenderSurface),
+                RenderMode.Canvas => new CanvasRenderContext((Canvas)this.RenderSurface),
+                RenderMode.Xaml => new XamlRenderContext((Canvas)this.RenderSurface),
                 _ => throw new InvalidEnumArgumentException($"The RenderMode value {this.RenderMode} is unknown. Override the CreateRenderContext method to support custom rendering.")
             };
         }
@@ -186,11 +188,16 @@ namespace OxyPlot.Wpf
 
             var renderSurface = this.RenderSurface as RenderSurface;
 
-            renderSurface?.BeginRender();
-            
-            base.RenderOverride();
+            try
+            {
+                renderSurface?.BeginRender();
 
-            renderSurface?.EndRender();
+                base.RenderOverride();
+            }
+            finally
+            {
+                renderSurface?.EndRender();
+            }
 
             if (idx != -1)
             {

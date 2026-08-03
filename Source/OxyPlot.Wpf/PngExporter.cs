@@ -95,9 +95,15 @@ namespace OxyPlot.Wpf
             rc.DpiScale = this.Resolution / 96;
 
             model.Update(true);
-            renderSurface.BeginRender();
-            model.Render(rc, new OxyRect(0, 0, renderSurface.Width, renderSurface.Height));
-            renderSurface.EndRender();
+            try
+            {
+                renderSurface.BeginRender();
+                model.Render(rc, new OxyRect(0, 0, renderSurface.Width, renderSurface.Height));
+            }
+            finally
+            {
+                renderSurface.EndRender();
+            }
 
             renderSurface.UpdateLayout();
 
