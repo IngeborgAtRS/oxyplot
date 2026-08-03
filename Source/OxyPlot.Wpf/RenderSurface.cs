@@ -8,9 +8,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 namespace OxyPlot.Wpf
 {
-    using System.Diagnostics;
     using System.Globalization;
-    using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Media;
@@ -61,7 +59,7 @@ namespace OxyPlot.Wpf
                 {
                     dc.DrawEllipse(fillBrush, pen, center, radiusX, radiusY);
                 }
-                this.currentDc.DrawDrawing(wrappedGroup);
+                this.currentDc?.DrawDrawing(wrappedGroup);
             }
             else
             {
@@ -91,7 +89,7 @@ namespace OxyPlot.Wpf
                 {
                     dc.DrawGeometry(fillBrush, pen, streamGeometry);
                 }
-                this.currentDc.DrawDrawing(wrappedGroup);
+                this.currentDc?.DrawDrawing(wrappedGroup);
             }
             else
             {
@@ -122,7 +120,7 @@ namespace OxyPlot.Wpf
                 {
                     dc.DrawRectangle(fillBrush, pen, rect);
                 }
-                this.currentDc.DrawDrawing(wrappedGroup);
+                this.currentDc?.DrawDrawing(wrappedGroup);
             }
             else
             {

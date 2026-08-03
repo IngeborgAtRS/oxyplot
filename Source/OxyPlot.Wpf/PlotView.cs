@@ -9,6 +9,7 @@
 
 namespace OxyPlot.Wpf
 {
+    using System.ComponentModel;
     using System.Diagnostics;
 
     using OxyPlot;
@@ -55,9 +56,9 @@ namespace OxyPlot.Wpf
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="RenderModeProperty"/> dependency property/>.
+        /// Gets or sets the <see cref="RenderModeProperty"/> dependency property
         /// </summary>
-        /// <value>The true if the rendering should create WPF elements.</value>
+        /// <value>The type of rendering to use: DrawingGroup or WPF elements (serializable or not serializable).</value>
         public RenderMode RenderMode
         {
             get => (RenderMode)this.GetValue(RenderModeProperty);
@@ -76,7 +77,7 @@ namespace OxyPlot.Wpf
         /// </summary>
         public PlotView()
         {
-            this.DisconnectCanvasWhileUpdating = true;
+            this.DisconnectCanvasWhileUpdating = this.RenderMode != RenderMode.Drawing;
             this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, this.DoCopy));
         }
 
@@ -129,7 +130,7 @@ namespace OxyPlot.Wpf
                 RenderMode.Drawing => new RenderSurface(),
                 RenderMode.Canvas => new Canvas(),
                 RenderMode.Xaml => new Canvas(),
-                _ => null
+                _ => throw new InvalidEnumArgumentException($"The RenderMode value {this.RenderMode} is unknown. Override the CreatePlotPresenter method to support custom rendering.")
             };
         }
 
@@ -141,7 +142,7 @@ namespace OxyPlot.Wpf
                 RenderMode.Drawing => new DrawingRenderContext(this.RenderSurface as RenderSurface),
                 RenderMode.Canvas => new CanvasRenderContext(this.RenderSurface as Canvas),
                 RenderMode.Xaml => new XamlRenderContext(this.RenderSurface as Canvas),
-                _ => null
+                _ => throw new InvalidEnumArgumentException($"The RenderMode value {this.RenderMode} is unknown. Override the CreateRenderContext method to support custom rendering.")
             };
         }
 
@@ -165,7 +166,7 @@ namespace OxyPlot.Wpf
             // Note that if the RenderMode is Canvas or Xaml, this will add elements to the visual tree.
             // This is highly questionable, since it will trigger a new measure/arrange cycle, something 
             // that should not be done in the render phase. In some cases this can result in failure to redraw the graph.
-            this.Render(); 
+            this.Render();
             base.OnRender(drawingContext);
         }
 
@@ -173,50 +174,30 @@ namespace OxyPlot.Wpf
         protected override void RenderOverride()
         {
             this.RenderContext.TextMeasurementMethod = this.TextMeasurementMethod;
-            switch (this.RenderMode)
+
+            int idx = -1;
+            if (this.DisconnectCanvasWhileUpdating)
             {
-                case RenderMode.Drawing:
-                    if (this.RenderSurface is RenderSurface renderSurface)
-                    {
-                        renderSurface.BeginRender();
-                        try
-                        {
-                            base.RenderOverride();
-                        }
-                        finally
-                        {
-                            Debug.Assert(
-                                this.renderContext.ClipCount == 0,
-                                "Unbalanced clipping stack after rendering.");
-                            renderSurface.EndRender();
-                        }
-                    }
+                // TODO: profile... not sure if this makes any difference
+                idx = this.grid.Children.IndexOf(this.plotPresenter);
+                if (idx != -1)
+                {
+                    this.grid.Children.RemoveAt(idx);
+                }
+            }
 
-                    break;
-                case RenderMode.Canvas:
-                case RenderMode.Xaml:
-                    if (this.DisconnectCanvasWhileUpdating && this.RenderSurface is Canvas)
-                    {
-                        // TODO: profile... not sure if this makes any difference
-                        var idx = this.grid.Children.IndexOf(this.plotPresenter);
-                        if (idx != -1)
-                        {
-                            this.grid.Children.RemoveAt(idx);
-                        }
+            var renderSurface = this.RenderSurface as RenderSurface;
 
-                        base.RenderOverride();
+            renderSurface?.BeginRender();
+            
+            base.RenderOverride();
 
-                        if (idx != -1)
-                        {
-                            // reinsert the canvas again
-                            this.grid.Children.Insert(idx, this.plotPresenter);
-                        }
-                    }
+            renderSurface?.EndRender();
 
-                    break;
-                default:
-                    base.RenderOverride();
-                    break;
+            if (idx != -1)
+            {
+                // reinsert the canvas again
+                this.grid.Children.Insert(idx, this.plotPresenter);
             }
         }
 

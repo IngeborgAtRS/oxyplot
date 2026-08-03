@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CanvasRenderContext.cs" company="OxyPlot">
+// <copyright file="DrawingRenderContext.cs" company="OxyPlot">
 //   Copyright (c) 2014 OxyPlot contributors
 // </copyright>
 // <summary>
-//   Implements <see cref="IRenderContext" /> for <see cref="System.Windows.Controls.Canvas" />.
+//   Implements <see cref="IRenderContext" /> for <see cref="RenderSurface" />.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
