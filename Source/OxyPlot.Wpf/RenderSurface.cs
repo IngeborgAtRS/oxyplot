@@ -193,11 +193,8 @@ namespace OxyPlot.Wpf
         internal void DrawText(Point location, string text, Brush brush, FontFamily fontFamily, double fontSize,
           FontWeight fontWeight, TextFormattingMode textFormattingMode, Transform transform)
         {
-            if (this.currentDc == null)
-                return;
-
-            if (brush == null)
-                return; // invisible text, do not draw.
+            if (this.currentDc == null || brush == null || string.IsNullOrEmpty(text))
+                return; // no text or invisible text, do not draw.
 
             if (fontSize <= 0)
             {

@@ -19,7 +19,7 @@ namespace OxyPlot.Wpf
     using System.Windows.Media;
 
     /// <summary>
-    /// Different modes of rendering the plot. The default is <see cref="Drawing"/>.
+    /// Different modes of rendering the plot. The default is <see cref="RenderMode.Drawing"/>.
     /// </summary>
     public enum RenderMode
     {
@@ -153,6 +153,10 @@ namespace OxyPlot.Wpf
                 return;
             }
 
+            if (this.RenderMode != RenderMode.Drawing)
+            {
+                this.DisconnectCanvasWhileUpdating = true;
+            }
             this.grid.Children.Remove(this.plotPresenter);
             this.plotPresenter = this.CreatePlotPresenter();
             this.renderContext = this.CreateRenderContext();
