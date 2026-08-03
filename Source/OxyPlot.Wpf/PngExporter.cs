@@ -84,11 +84,12 @@ namespace OxyPlot.Wpf
         public BitmapSource ExportToBitmap(IPlotModel model)
         {
             var scale = 96d / this.Resolution;
-            var canvas = new Canvas { Width = this.Width * scale, Height = this.Height * scale, Background = model.Background.ToBrush() };
+            var canvas = new RenderSurface { Width = this.Width * scale, Height = this.Height * scale, Background = model.Background.ToBrush() };
+
             canvas.Measure(new Size(canvas.Width, canvas.Height));
             canvas.Arrange(new Rect(0, 0, canvas.Width, canvas.Height));
 
-            var rc = new CanvasRenderContext(canvas) { RendersToScreen = false };
+            var rc = new DrawingRenderContext(canvas) { RendersToScreen = false };
 
             rc.TextFormattingMode = TextFormattingMode.Ideal;
             rc.DpiScale = this.Resolution / 96;
