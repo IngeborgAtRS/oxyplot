@@ -6,9 +6,11 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Example to demonstrate how to create vertical BarSeries
+- A new RenderContext for WPF that renders into DrawingGroup instead of createing WPF elements.
 
 ### Fixed
 - DateTimeAxis converting local time rather than UTC to TimeZone
+- Removed legacy NUnit calls from tests.
 
 ### Changed
 - Target .NET 10, remove target .NET 6 (out of support and incompatible with nuget updates)
