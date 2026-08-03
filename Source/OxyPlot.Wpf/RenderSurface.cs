@@ -185,6 +185,10 @@ namespace OxyPlot.Wpf
         {
             if (this.currentDc == null)
                 return;
+
+            if (brush == null)
+                return; // invisible text, do not draw.
+
             if (fontSize <= 0)
             {
                 fontSize = this.GetValue(TextBlock.FontSizeProperty) is double fs ? fs : 12.0;
