@@ -5,7 +5,7 @@
         <AllowMissingPrunePackageData>true</AllowMissingPrunePackageData>
         <Description>OxyPlot is a plotting library for .NET. This is package is based on SixLabors.ImageSharp.</Description>
         <PackageTags>plotting plot charting chart imagesharp</PackageTags>
-        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <WarningsAsErrors />
