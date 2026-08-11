@@ -11,7 +11,6 @@
         <SignAssembly>True</SignAssembly>
         <Description>OxyPlot is a plotting library for .NET. This package targets WPF applications.</Description>
         <PackageTags>plotting plot charting chart</PackageTags>
-        <PackageId>$(PackageIdPrefix)OxyPlot.Wpf</PackageId>
     </PropertyGroup>
     <ItemGroup>
         <None Include="OxyPlot.Wpf.snk" />

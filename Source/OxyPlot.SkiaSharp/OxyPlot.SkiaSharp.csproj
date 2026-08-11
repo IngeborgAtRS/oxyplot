@@ -8,7 +8,7 @@
         <Authors>OxyPlot contributors</Authors>
         <Description>OxyPlot is a plotting library for .NET. This package provides rendering based on SkiaSharp.</Description>
         <PackageTags>plotting plot charting chart skiasharp skia pdf</PackageTags>
-        <PackageId>$(PackageIdPrefix)OxyPlot.SkiaSharp</PackageId>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <SignAssembly>true</SignAssembly>
         <AssemblyOriginatorKeyFile>OxyPlot.SkiaSharp.snk</AssemblyOriginatorKeyFile>

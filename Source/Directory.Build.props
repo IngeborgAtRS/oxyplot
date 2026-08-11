@@ -6,15 +6,7 @@
     <PropertyGroup>
         <Copyright>Copyright (c) 2014-2026 OxyPlot Contributors</Copyright>
         <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/IngeborgAtRS/oxyplot</RepositoryUrl>
+        <RepositoryUrl>https://github.com/oxyplot/oxyplot.git</RepositoryUrl>
         <EnableWindowsTargeting>true</EnableWindowsTargeting>
-
-        <!-- Fork identity. PackageIdPrefix is prepended to the package id of every
-         packable project so the packages never collide with the official ones. -->
-        <PackageIdPrefix>RaySearch.</PackageIdPrefix>
-        <VersionPrefix>2.2.0</VersionPrefix>
-        <PackageProjectUrl>https://github.com/IngeborgAtRS/oxyplot</PackageProjectUrl>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PublishRepositoryUrl>true</PublishRepositoryUrl>
     </PropertyGroup>
 </Project>

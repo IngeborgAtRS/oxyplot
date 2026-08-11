@@ -15,13 +15,8 @@ namespace ExampleBrowser
     /// <summary>
     /// Represents a PlotView which uses the XamlRenderContext for rendering.
     /// </summary>
-    public class XamlPlotView : PlotView
+    public class XamlPlotView : CanvasPlotView
     {
-        protected override FrameworkElement CreatePlotPresenter()
-        {
-            return new Canvas();
-        }
-
         protected override IRenderContext CreateRenderContext()
         {
             return new XamlRenderContext((Canvas)this.RenderSurface);

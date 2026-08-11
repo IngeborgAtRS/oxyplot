@@ -9,10 +9,7 @@
 
 namespace OxyPlot.Wpf
 {
-    using System;
-
     using OxyPlot;
-    using System.ComponentModel;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Input;
@@ -102,18 +99,6 @@ namespace OxyPlot.Wpf
         protected override void RenderOverride()
         {
             this.RenderContext.TextMeasurementMethod = this.TextMeasurementMethod;
-
-            int idx = -1;
-            if (this.DisconnectCanvasWhileUpdating)
-            {
-                // TODO: profile... not sure if this makes any difference
-                idx = this.grid.Children.IndexOf(this.plotPresenter);
-                if (idx != -1)
-                {
-                    this.grid.Children.RemoveAt(idx);
-                }
-            }
-
             var renderSurface = this.RenderSurface as RenderSurface;
 
             try
@@ -125,12 +110,6 @@ namespace OxyPlot.Wpf
             finally
             {
                 renderSurface?.EndRender();
-            }
-
-            if (idx != -1)
-            {
-                // reinsert the canvas again
-                this.grid.Children.Insert(idx, this.plotPresenter);
             }
         }
 
