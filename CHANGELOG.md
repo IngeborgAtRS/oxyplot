@@ -11,10 +11,10 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - DateTimeAxis converting local time rather than UTC to TimeZone
 - Removed legacy NUnit calls from tests.
-- Some tests fail when run in a culture that is not using dot as decimal separator. Fixed by setting the culture to invariant when parsing doubles.
+- Fix tests that file when run in a culture that is not using dot as decimal separator by setting the culture to invariant when parsing doubles.
 
 ### Changed
-- Target .NET 8 (temporary change), remove target .NET 6 (out of support and incompatible with nuget updates)
+- Target .NET 10, remove target .NET 6 (out of support and incompatible with nuget updates)
 - Various nuget package upgrades
 
 ## [2.2.0] - 2024-09-03
