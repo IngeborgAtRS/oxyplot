@@ -115,8 +115,8 @@
                         </Grid.Resources>
                         <oxySkia:PlotView Model="{Binding SkiaModel}" Controller="{Binding SelectedExample.PlotController}" Visibility="{Binding SkiaModel, Converter={StaticResource NotNullVisibilityConverter}}" />
                         <oxyWpf:PlotView Model="{Binding DrawingModel}" Controller="{Binding SelectedExample.PlotController}" Visibility="{Binding DrawingModel, Converter={StaticResource NotNullVisibilityConverter}}" />
-                        <oxyWpf:PlotView RenderMode="Canvas" Model="{Binding CanvasModel}" Controller="{Binding SelectedExample.PlotController}" Visibility="{Binding CanvasModel, Converter={StaticResource NotNullVisibilityConverter}}" />
-                        <oxyWpf:PlotView RenderMode="Xaml" Model="{Binding XamlModel}" Controller="{Binding SelectedExample.PlotController}" Visibility="{Binding XamlModel, Converter={StaticResource NotNullVisibilityConverter}}" />
+                        <local:CanvasPlotView Model="{Binding CanvasModel}" Controller="{Binding SelectedExample.PlotController}" Visibility="{Binding CanvasModel, Converter={StaticResource NotNullVisibilityConverter}}" />
+                        <local:XamlPlotView Model="{Binding XamlModel}" Controller="{Binding SelectedExample.PlotController}" Visibility="{Binding XamlModel, Converter={StaticResource NotNullVisibilityConverter}}" />
                     </Grid>
                 </TabItem>
                 <TabItem Header="Code">

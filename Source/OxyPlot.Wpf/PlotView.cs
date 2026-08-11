@@ -19,52 +19,10 @@ namespace OxyPlot.Wpf
     using System.Windows.Media;
 
     /// <summary>
-    /// Different modes of rendering the plot. The default is <see cref="RenderMode.Drawing"/>.
-    /// </summary>
-    public enum RenderMode
-    {
-        /// <summary>
-        /// The graph is rendered as a DrawingGroup.
-        /// </summary>
-        Drawing,
-        /// <summary>
-        /// The graph is rendered as a collection of Path and TextBlock elements.
-        /// </summary>
-        Canvas,
-        /// <summary>
-        /// Similar to Canvas, but the graph is rendered in a way that allows serializing to XAML.
-        /// </summary>
-        Xaml,
-    }
-
-    /// <summary>
     /// Represents a control that displays a <see cref="PlotModel" />. This <see cref="IPlotView"/> is based on <see cref="DrawingRenderContext"/>.
     /// </summary>
     public partial class PlotView : PlotViewBase
     {
-        /// <summary>
-        /// Identifies the <see cref="RenderMode"/> dependency property. This controls the type of render surface used.
-        /// </summary>
-        public static readonly DependencyProperty RenderModeProperty = DependencyProperty.Register(nameof(RenderMode), typeof(RenderMode), typeof(PlotView), new PropertyMetadata(RenderMode.Drawing, OnRenderModeChanged));
-
-        private static void OnRenderModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is PlotView plotView)
-            {
-                plotView.ReplaceRenderSurface();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="RenderModeProperty"/> dependency property
-        /// </summary>
-        /// <value>The type of rendering to use: DrawingGroup or WPF elements (serializable or not serializable).</value>
-        public RenderMode RenderMode
-        {
-            get => (RenderMode)this.GetValue(RenderModeProperty);
-            set => this.SetValue(RenderModeProperty, value);
-        }
-
         /// <summary>
         /// Identifies the <see cref="TextMeasurementMethod"/> dependency property.
         /// </summary>
@@ -77,7 +35,6 @@ namespace OxyPlot.Wpf
         /// </summary>
         public PlotView()
         {
-            this.DisconnectCanvasWhileUpdating = this.RenderMode != RenderMode.Drawing;
             this.CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, this.DoCopy));
         }
 
@@ -125,51 +82,18 @@ namespace OxyPlot.Wpf
         /// <inheritdoc/>
         protected override FrameworkElement CreatePlotPresenter()
         {
-            return this.RenderMode switch
-            {
-                RenderMode.Drawing => new RenderSurface(),
-                RenderMode.Canvas => new Canvas(),
-                RenderMode.Xaml => new Canvas(),
-                _ => throw new InvalidEnumArgumentException($"The RenderMode value {this.RenderMode} is unknown. Override the CreatePlotPresenter method to support custom rendering.")
-            };
+            return new RenderSurface();
         }
 
         /// <inheritdoc/>
         protected override IRenderContext CreateRenderContext()
         {
-            return this.RenderMode switch
-            {
-                RenderMode.Drawing => new DrawingRenderContext((RenderSurface)this.RenderSurface),
-                RenderMode.Canvas => new CanvasRenderContext((Canvas)this.RenderSurface),
-                RenderMode.Xaml => new XamlRenderContext((Canvas)this.RenderSurface),
-                _ => throw new InvalidEnumArgumentException($"The RenderMode value {this.RenderMode} is unknown. Override the CreateRenderContext method to support custom rendering.")
-            };
-        }
-
-        private void ReplaceRenderSurface()
-        {
-            if (this.grid == null)
-            {
-                return;
-            }
-
-            if (this.RenderMode != RenderMode.Drawing)
-            {
-                this.DisconnectCanvasWhileUpdating = true;
-            }
-            this.grid.Children.Remove(this.plotPresenter);
-            this.plotPresenter = this.CreatePlotPresenter();
-            this.renderContext = this.CreateRenderContext();
-            this.grid.Children.Add(this.plotPresenter);
-            this.plotPresenter.UpdateLayout();
+            return new DrawingRenderContext((RenderSurface)this.RenderSurface);
         }
 
         /// <inheritdoc/>
         protected override void OnRender(DrawingContext drawingContext)
         {
-            // Note that if the RenderMode is Canvas or Xaml, this will add elements to the visual tree.
-            // This is highly questionable, since it will trigger a new measure/arrange cycle, something 
-            // that should not be done in the render phase. In some cases this can result in failure to redraw the graph.
             this.Render();
             base.OnRender(drawingContext);
         }
