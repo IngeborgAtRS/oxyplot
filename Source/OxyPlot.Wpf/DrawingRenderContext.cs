@@ -56,8 +56,8 @@ namespace OxyPlot.Wpf
         public override void DrawEllipses(
             IList<OxyRect> rectangles,
             OxyColor fill,
-            OxyColor stroke, 
-            double thickness, 
+            OxyColor stroke,
+            double thickness,
             EdgeRenderingMode edgeRenderingMode)
         {
             if (rectangles.Count == 0)
@@ -75,7 +75,12 @@ namespace OxyPlot.Wpf
             }
             foreach (var rect in rectangles)
             {
-                this._renderSurface.DrawEllipse(fillBrush, pen, new Point(rect.Center.X, rect.Center.Y), rect.Width / 2, rect.Height / 2, GetEdgeMode(edgeRenderingMode));
+                var geometry = new EllipseGeometry(new Point(rect.Center.X, rect.Center.Y), rect.Width / 2, rect.Height / 2);
+                this._renderSurface.DrawEllipse(fillBrush, pen, geometry.Center, geometry.RadiusX, geometry.RadiusY, GetEdgeMode(edgeRenderingMode));
+                if (!string.IsNullOrEmpty(this._currentToolTip))
+                {
+                    this._renderSurface.RegisterTooltipRegion(geometry, this._currentToolTip);
+                }
             }
         }
 
@@ -105,7 +110,10 @@ namespace OxyPlot.Wpf
             var pen = this.GetPen_(stroke, actualStrokeThickness, lineJoin, dashArray);
 
             this._renderSurface.DrawGeometry(null, pen, streamGeometry, GetEdgeMode(edgeRenderingMode));
-
+            if (!string.IsNullOrEmpty(this._currentToolTip))
+            {
+                this._renderSurface.RegisterTooltipRegion(streamGeometry, this._currentToolTip);
+            }
         }
 
         ///<inheritdoc/>
@@ -138,6 +146,10 @@ namespace OxyPlot.Wpf
             var pen = this.GetPen_(stroke, actualStrokeThickness, lineJoin, dashArray);
 
             this._renderSurface.DrawGeometry(null, pen, streamGeometry, GetEdgeMode(edgeRenderingMode));
+            if (!string.IsNullOrEmpty(this._currentToolTip))
+            {
+                this._renderSurface.RegisterTooltipRegion(streamGeometry, this._currentToolTip);
+            }
         }
 
         ///<inheritdoc/>
@@ -179,13 +191,17 @@ namespace OxyPlot.Wpf
             }
             streamGeometry.Freeze();
             this._renderSurface.DrawGeometry(fillBrush, pen, streamGeometry, GetEdgeMode(edgeRenderingMode));
+            if (!string.IsNullOrEmpty(this._currentToolTip))
+            {
+                this._renderSurface.RegisterTooltipRegion(streamGeometry, this._currentToolTip);
+            }
         }
 
         ///<inheritdoc/>
         public override void DrawRectangles(
             IList<OxyRect> rectangles,
-            OxyColor fill, OxyColor stroke, 
-            double thickness, 
+            OxyColor fill, OxyColor stroke,
+            double thickness,
             EdgeRenderingMode edgeRenderingMode)
         {
             if (rectangles.Count == 0)
@@ -205,6 +221,10 @@ namespace OxyPlot.Wpf
             {
                 var r = this.GetActualRect(rect, thickness, edgeRenderingMode);
                 this._renderSurface.DrawRectangle(fillBrush, pen, r, GetEdgeMode(edgeRenderingMode));
+                if (!string.IsNullOrEmpty(this._currentToolTip))
+                {
+                    this._renderSurface.RegisterTooltipRegion(new RectangleGeometry(r), this._currentToolTip);
+                }
             }
         }
 
@@ -223,10 +243,11 @@ namespace OxyPlot.Wpf
         {
             double dx = 0;
             double dy = 0;
+            OxySize measuredSize = default;
 
-            if (maxSize != null || halign != HorizontalAlignment.Left || valign != VerticalAlignment.Top)
+            if (maxSize != null || halign != HorizontalAlignment.Left || valign != VerticalAlignment.Top || !string.IsNullOrEmpty(this._currentToolTip))
             {
-                var measuredSize = this.MeasureText(text, fontFamily, fontSize, fontWeight);
+                measuredSize = this.MeasureText(text, fontFamily, fontSize, fontWeight);
                 Size size = new Size(measuredSize.Width, measuredSize.Height);
                 if (maxSize.HasValue)
                 {
@@ -270,6 +291,15 @@ namespace OxyPlot.Wpf
                 fontSize,
                 GetFontWeight(fontWeight), this.TextFormattingMode, transform);
 
+            if (!string.IsNullOrEmpty(this._currentToolTip))
+            {
+                var textGeom = new RectangleGeometry(new Rect(p.X, p.Y, measuredSize.Width, measuredSize.Height))
+                {
+                    Transform = transform
+                };
+                this._renderSurface.RegisterTooltipRegion(textGeom, this._currentToolTip);
+            }
+
             if (maxSize != null)
             {
                 this.PopClip();
@@ -309,7 +339,10 @@ namespace OxyPlot.Wpf
             }
 
             this._renderSurface.DrawImage(bitmapChain, destX, destY, destWidth, destHeight, opacity, interpolate ? BitmapScalingMode.HighQuality : BitmapScalingMode.NearestNeighbor);
-
+            if (!string.IsNullOrEmpty(this._currentToolTip))
+            {
+                this._renderSurface.RegisterTooltipRegion(new RectangleGeometry(new Rect(destX, destY, destWidth, destHeight)), this._currentToolTip);
+            }
         }
 
         private static EdgeMode GetEdgeMode(EdgeRenderingMode edgeRenderingMode)

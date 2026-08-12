@@ -9,9 +9,11 @@
 namespace OxyPlot.Wpf
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Input;
     using System.Windows.Media;
 
     /// <summary>
@@ -24,8 +26,86 @@ namespace OxyPlot.Wpf
     /// that it creates new WPF elements in OnRender.</remarks>
     public class RenderSurface : Panel
     {
-        private readonly DrawingGroup objectsToRender = new DrawingGroup();
+        private static readonly Pen HitTestPen = CreateHitTestPen();
+
+        private readonly DrawingGroup objectsToRender = new();
         private DrawingContext currentDc;
+        private readonly List<Tuple<Geometry, string>> tooltipRegions = new();
+        // Keeps track of whether the tooltip has been opened while the mouse is within this control.
+        private bool toolTipIsOpen;
+
+        private static Pen CreateHitTestPen()
+        {
+            var pen = new Pen(Brushes.Black, 3.0);
+            pen.Freeze();
+            return pen;
+        }
+
+        internal void RegisterTooltipRegion(Geometry geometry, string tooltip)
+        {
+            this.tooltipRegions.Add(new Tuple<Geometry, string>(geometry, tooltip));
+        }
+
+        private string GetToolTip(Point pos)
+        {
+            // iterate in reverse so the last-drawn (topmost) element wins
+            for (int i = this.tooltipRegions.Count - 1; i >= 0; i--)
+            {
+                var toolTip = this.tooltipRegions[i];
+                if (toolTip.Item1.FillContains(pos) || toolTip.Item1.StrokeContains(HitTestPen, pos))
+                {
+                    return toolTip.Item2;
+                }
+            }
+            return null;
+        }
+
+        /// <inheritdoc/>
+        protected override void OnToolTipOpening(ToolTipEventArgs e)
+        {
+            this.toolTipIsOpen = true;
+
+            if (this.ToolTip is ToolTip tt)
+            {
+                var toolTipText = tt.Content as string;
+                if (string.IsNullOrEmpty(toolTipText))
+                {
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            base.OnToolTipOpening(e);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+            if (this.ToolTip is ToolTip tt)
+            {
+                var toolTipText = this.GetToolTip(e.GetPosition(this));
+                var previousToolTipText = tt.Content as string;
+                tt.Content = toolTipText;
+                if (string.IsNullOrEmpty(toolTipText))
+                {
+                    tt.IsOpen = false;
+                }
+                else if (this.toolTipIsOpen && previousToolTipText != toolTipText)
+                {
+                    // tooltip text has changed, reopen since the tooltip is no longer in the right place
+                    tt.IsOpen = false;
+                    tt.IsOpen = true;
+                }
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            this.toolTipIsOpen = false;
+            base.OnMouseLeave(e);
+        }
 
         /// <inheritdoc/>
         protected override void OnRender(DrawingContext dc)
@@ -240,6 +320,7 @@ namespace OxyPlot.Wpf
         /// is properly finalized after calling this method.</remarks>
         internal void BeginRender()
         {
+            this.tooltipRegions.Clear();
             RenderOptions.SetClearTypeHint(this.objectsToRender, ClearTypeHint.Enabled);
             this.currentDc = this.objectsToRender.Open();
         }
@@ -252,6 +333,10 @@ namespace OxyPlot.Wpf
         /// operations can be performed  until a new rendering context is initialized.</remarks>
         internal void EndRender()
         {
+            if (this.ToolTip is null && this.tooltipRegions.Count > 0)
+            {
+                this.ToolTip = new ToolTip() { Content = string.Empty };
+            }
             this.currentDc?.Close();
             this.currentDc = null;
         }

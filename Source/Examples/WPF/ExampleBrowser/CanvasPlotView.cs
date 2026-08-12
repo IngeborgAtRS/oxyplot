@@ -22,6 +22,9 @@ namespace ExampleBrowser
             this.DisconnectCanvasWhileUpdating = true;
         }
 
+        /// <inheritdoc/>
+        protected override bool RenderSurfaceHandlesMouseEvents => false;
+
         protected override FrameworkElement CreatePlotPresenter()
         {
             return new Canvas();

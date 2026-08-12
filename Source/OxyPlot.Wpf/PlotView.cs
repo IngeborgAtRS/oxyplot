@@ -72,14 +72,14 @@ namespace OxyPlot.Wpf
             }
             else
             {
-                this.RenderSurface.Background = null;
+                this.RenderSurface.Background = Brushes.Transparent;
             }
         }
 
         /// <inheritdoc/>
         protected override FrameworkElement CreatePlotPresenter()
         {
-            return new RenderSurface();
+            return new RenderSurface() { Background = Brushes.Transparent };
         }
 
         /// <inheritdoc/>
